@@ -24,8 +24,6 @@ export default function Home() {
     refetchCart();
   }, []);
 
-  console.log('cart in app is: ', cart);
-
   return (
     <>
       {cart ? <App /> : <StartApp onRegistered={handleRegistered} />}

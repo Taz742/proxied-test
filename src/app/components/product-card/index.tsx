@@ -1,10 +1,15 @@
 import React, { memo, useMemo, useState } from 'react';
 import { format } from 'date-fns';
+
 import { IProduct } from '@/app/interfaces/product';
-import { useMutation } from '@apollo/client';
-import { ADD_ITEM_TO_CART } from '@/app/graphql/mutations/add-item-to-cart';
+
 import { useCart } from '@/app/context/cart';
-import { UPDATE_ITEM_QUANTITY } from '@/app/graphql/mutations/update-product-item-quantity';
+
+import { useMutation } from '@apollo/client';
+import {
+  ADD_ITEM_TO_CART,
+  UPDATE_CART_ITEM_QUANTITY,
+} from '@/app/graphql/mutations/cart';
 
 interface IProps {
   product: IProduct;
@@ -16,7 +21,7 @@ const ProductCard: React.FC<IProps> = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
 
   const [addItemToCart] = useMutation(ADD_ITEM_TO_CART);
-  const [updateItemToCart] = useMutation(UPDATE_ITEM_QUANTITY);
+  const [updateItemToCart] = useMutation(UPDATE_CART_ITEM_QUANTITY);
 
   const productCartItem = useMemo(() => {
     return cart!.items.find((cartItem) => cartItem.product._id === product._id);
