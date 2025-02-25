@@ -1,7 +1,28 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  ApolloLink,
+} from '@apollo/client';
+
+const httpLink = createHttpLink({
+  uri: 'https://take-home-be.onrender.com/api',
+});
+
+const authLink = new ApolloLink((operation, forward) => {
+  const token = localStorage.getItem('token');
+
+  operation.setContext({
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  });
+
+  return forward(operation);
+});
 
 const client = new ApolloClient({
-  uri: 'https://take-home-be.onrender.com/api', // Your GraphQL API endpoint
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 

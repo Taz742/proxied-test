@@ -1,26 +1,35 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import ReactModal from 'react-modal';
 
 import { StartApp } from './components/start-app';
+import { App } from './components/app';
 
 import { IVisitor } from './interfaces/visitor';
-import { useVisitor } from './context/visitor';
+
+import { useCart } from './context/cart';
 
 export default function Home() {
-  const { visitor, setVisitor } = useVisitor();
+  const { cart, refetchCart } = useCart();
 
-  const handleRegistered = useCallback((visitor: IVisitor) => {
-    setVisitor(visitor);
+  useEffect(() => {
+    if (typeof window !== 'undefined')
+      ReactModal.setAppElement(document.getElementById('modals')!);
   }, []);
 
+  const handleRegistered = useCallback((visitor: IVisitor) => {
+    localStorage.setItem('token', visitor.token);
+
+    refetchCart();
+  }, []);
+
+  console.log('cart in app is: ', cart);
+
   return (
-    <div>
-      {!visitor ? (
-        <StartApp onRegistered={handleRegistered} />
-      ) : (
-        <>user registered {visitor.cartId}</>
-      )}
-    </div>
+    <>
+      {cart ? <App /> : <StartApp onRegistered={handleRegistered} />}
+      <div id="modals" />
+    </>
   );
 }
