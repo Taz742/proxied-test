@@ -16,3 +16,19 @@ export interface ICart {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IUpdatedCart {
+  _id: string;
+  quantity: number;
+  product: {
+    _id: string;
+    title: string;
+  };
+}
+
+export interface ICartSubscriptionResponse {
+  cartItemUpdate: {
+    event: 'ITEM_QUANTITY_UPDATED' | 'ITEM_OUT_OF_STOCK';
+    payload: IUpdatedCart;
+  };
+}

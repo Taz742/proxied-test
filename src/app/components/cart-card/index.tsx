@@ -6,6 +6,11 @@ import {
   REMOVE_CART_ITEM,
   UPDATE_CART_ITEM_QUANTITY,
 } from '@/app/graphql/mutations/cart';
+import {
+  cartRemoveItemSchema,
+  cartUpdateItemQuantitySchema,
+} from '@/app/utils/validators/product';
+import { z } from 'zod';
 
 interface IProps {
   cartItem: ICartItem;
@@ -16,27 +21,41 @@ export const CartCard: React.FC<IProps> = ({ cartItem }) => {
   const [updateItemToCart] = useMutation(UPDATE_CART_ITEM_QUANTITY);
 
   const handleRemoveItem = async () => {
+    const dataToSend = {
+      cartItemId: cartItem._id,
+    };
     try {
+      await cartRemoveItemSchema.parseAsync(dataToSend);
       await removeItem({
-        variables: { input: { cartItemId: cartItem._id } },
+        variables: { input: dataToSend },
       });
     } catch (error) {
-      console.error('Error removing item:', error);
+      if (error instanceof z.ZodError) {
+        console.error('Validation Error:', error.errors);
+      } else {
+        console.error('Error adding product to cart', error);
+      }
     }
   };
 
   const handleUpdateProductQuantity = async (quantity: number) => {
+    const dataToSend = {
+      cartItemId: cartItem!._id,
+      quantity,
+    };
     try {
+      await cartUpdateItemQuantitySchema.parseAsync(dataToSend);
       await updateItemToCart({
         variables: {
-          input: {
-            cartItemId: cartItem!._id,
-            quantity,
-          },
+          input: dataToSend,
         },
       });
     } catch (error) {
-      console.error('Error updating product to cart', error);
+      if (error instanceof z.ZodError) {
+        console.error('Validation Error:', error.errors);
+      } else {
+        console.error('Error adding product to cart', error);
+      }
     }
   };
 
